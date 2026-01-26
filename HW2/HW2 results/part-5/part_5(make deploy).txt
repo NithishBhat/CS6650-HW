@@ -1,0 +1,101 @@
+C:\Users\nithi>ssh -i "C:\Users\nithi\Downloads\key.pem" ec2-user@34.220.148.115
+
+
+
+A newer release of "Amazon Linux" is available.
+
+  Version 2023.10.20260120:
+
+  Version 2023.10.20260120:
+
+Run "/usr/bin/dnf check-release-update" for full release and version update info
+
+   ,     #_
+
+   ~\_  ####_        Amazon Linux 2023
+
+  ~~  \_#####\
+
+  ~~     \###|
+
+  ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+
+   ~~       V~' '->
+
+    ~~~         /
+
+      ~~._.   _/
+
+         _/ _/
+
+       _/m/'
+
+Last login: Mon Jan 26 10:33:47 2026 from 73.143.28.61
+
+[ec2-user@ip-172-31-16-212 ~]$ ls
+
+go  mystery
+
+[ec2-user@ip-172-31-16-212 ~]$ cd ~/mystery
+
+[ec2-user@ip-172-31-16-212 mystery]$ ls
+
+Makefile  bootstrap  function.zip  go.mod  go.sum  main.go  test-race
+
+[ec2-user@ip-172-31-16-212 mystery]$ make deploy
+
+Building Lambda function...
+
+GOOS=linux GOARCH=amd64 go build -o bootstrap main.go
+
+zip -q function.zip bootstrap
+
+✓ Build complete: function.zip
+
+Lambda function does not exist, creating...
+
+make[1]: Entering directory '/home/ec2-user/mystery'
+
+Building Lambda function...
+
+GOOS=linux GOARCH=amd64 go build -o bootstrap main.go
+
+zip -q function.zip bootstrap
+
+✓ Build complete: function.zip
+
+Checking IAM role...
+
+Creating IAM role album-counter-lambda-role...
+
+✓ IAM role created
+
+Waiting 10 seconds for IAM role to propagate...
+
+Creating Lambda function album-counter...
+
+✓ Lambda function created
+
+make[2]: Entering directory '/home/ec2-user/mystery'
+
+Setting up Function URL...
+
+✓ Function URL created
+
+Setting up public access permission...
+
+✓ Function URL configured
+
+
+
+Function URL:
+
+https://tblhg7pfdpozkd7sqnxbqls3340drdzz.lambda-url.us-west-2.on.aws/
+
+make[2]: Leaving directory '/home/ec2-user/mystery'
+
+make[1]: Leaving directory '/home/ec2-user/mystery'
+
+
+
+✓ Deployment complete!

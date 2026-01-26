@@ -1,13 +1,116 @@
---- Initial State ---
-Checking Instance 1...
-Instance 1 has 3 albums.
-Checking Instance 2...
-Instance 2 has 3 albums.
+runfile('C:/Users/nithi/OneDrive/Documents/GitHub/CS6650-HW/HW2/Hw2_script.py', wdir='C:/Users/nithi/OneDrive/Documents/GitHub/CS6650-HW/HW2')
+Starting data test...
+Instance 1 response: [
+    {
+        "id": "1",
+        "title": "Blue Train",
+        "artist": "John Coltrane",
+        "price": 56.99
+    },
+    {
+        "id": "2",
+        "title": "Jeru",
+        "artist": "Gerry Mulligan",
+        "price": 17.99
+    },
+    {
+        "id": "3",
+        "title": "Sarah Vaughan and Clifford Brown",
+        "artist": "Sarah Vaughan",
+        "price": 39.99
+    }
+]
 
---- Adding album to Instance 2 ONLY ---
 
---- Final State ---
-Checking Instance 1...
-Instance 1 has 3 albums.
-Checking Instance 2...
-Instance 2 has 4 albums.
+and...
+Instance 2 response: [
+    {
+        "id": "1",
+        "title": "Blue Train",
+        "artist": "John Coltrane",
+        "price": 56.99
+    },
+    {
+        "id": "2",
+        "title": "Jeru",
+        "artist": "Gerry Mulligan",
+        "price": 17.99
+    },
+    {
+        "id": "3",
+        "title": "Sarah Vaughan and Clifford Brown",
+        "artist": "Sarah Vaughan",
+        "price": 39.99
+    },
+    {
+        "id": "4",
+        "title": "The Modern Sound of Betty Carter",
+        "artist": "Betty Carter",
+        "price": 49.99
+    }
+]
+
+
+and adding...
+Instance 2 response: {
+    "id": "4",
+    "title": "The Modern Sound of Betty Carter",
+    "artist": "Betty Carter",
+    "price": 49.99
+}
+Instance 1 response: [
+    {
+        "id": "1",
+        "title": "Blue Train",
+        "artist": "John Coltrane",
+        "price": 56.99
+    },
+    {
+        "id": "2",
+        "title": "Jeru",
+        "artist": "Gerry Mulligan",
+        "price": 17.99
+    },
+    {
+        "id": "3",
+        "title": "Sarah Vaughan and Clifford Brown",
+        "artist": "Sarah Vaughan",
+        "price": 39.99
+    }
+]
+
+
+and...
+Instance 2 response: [
+    {
+        "id": "1",
+        "title": "Blue Train",
+        "artist": "John Coltrane",
+        "price": 56.99
+    },
+    {
+        "id": "2",
+        "title": "Jeru",
+        "artist": "Gerry Mulligan",
+        "price": 17.99
+    },
+    {
+        "id": "3",
+        "title": "Sarah Vaughan and Clifford Brown",
+        "artist": "Sarah Vaughan",
+        "price": 39.99
+    },
+    {
+        "id": "4",
+        "title": "The Modern Sound of Betty Carter",
+        "artist": "Betty Carter",
+        "price": 49.99
+    },
+    {
+        "id": "4",
+        "title": "The Modern Sound of Betty Carter",
+        "artist": "Betty Carter",
+        "price": 49.99
+    }
+]
+uhoh... what happened?
