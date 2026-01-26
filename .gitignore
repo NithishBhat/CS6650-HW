@@ -1,0 +1,37 @@
+# --- Terraform ---
+# The massive provider files (CAUSE OF YOUR ERROR)
+**/.terraform/
+
+# State files (contain sensitive info about your deployment)
+*.tfstate
+*.tfstate.backup
+
+# Variables file (contains your specific IP and Keys)
+*.tfvars
+*.tfvars.json
+
+# Crash logs
+crash.log
+
+# --- Go ---
+# Binaries/Executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+test
+main
+
+# Output of 'go test -c'
+*.test
+
+# --- OS & IDE ---
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# VS Code
+.vscode/

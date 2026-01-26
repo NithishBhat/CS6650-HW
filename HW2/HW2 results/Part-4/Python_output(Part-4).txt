@@ -1,0 +1,13 @@
+--- Initial State ---
+Checking Instance 1...
+Instance 1 has 3 albums.
+Checking Instance 2...
+Instance 2 has 3 albums.
+
+--- Adding album to Instance 2 ONLY ---
+
+--- Final State ---
+Checking Instance 1...
+Instance 1 has 3 albums.
+Checking Instance 2...
+Instance 2 has 4 albums.
