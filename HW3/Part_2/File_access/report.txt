@@ -1,0 +1,13 @@
+1. What?  Why?  What is going on and what are the lessons learned about tradeoffs from these results?
+
+    Answer:
+
+    Unbuffered Duration mean: 224 ms
+    Buffered Duration mean:   2.3 ms
+
+    the Buffered is way faster than the unbuffered because of the below.
+
+    Unbuffered f. write, the cpu stops the progarm and waits till it recives 
+    aknowledgement from the write to switch back to the program
+
+    Buffered bufio collects data in a bucket in the ram and only calls the writes to io when the bucket is full.

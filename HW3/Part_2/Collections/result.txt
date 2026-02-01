@@ -1,0 +1,2 @@
+The error is due to multiple go routines trying to access the map 
+concurrently and it is not allowed due to data intergrity issues that might come up.

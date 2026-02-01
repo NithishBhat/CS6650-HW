@@ -1,0 +1,13 @@
+GOMAXPROCS(1)   mean		111.96 ns
+Multi-threaded	mean	    159.08 ns
+
+
+1.Record and compare the two averages. Which one is faster? Why?  
+Answer:
+        GOMAXPROCS(1) is faster . Go light weight threads and optimized for context switching than mutithreaded 
+        approach.
+
+
+2.How do you think this relates to the cost of context switching between processes, containers, and virtual machines?
+
+Answer: the cost of context switching increases with containers , processes and virtual machines 

@@ -1,0 +1,8 @@
+are the throughputs making sense to you?
+yes, its in accordance to the Law.
+
+ If we assign more workers to do work, how do you think the throughput will change? Linearly?
+No it will not change linearly since its a bottle neck no matter how many workers are thrown at it.
+
+Is there any way in which the reading and writing of the same item to something like a hashmap might contribute to your observations?
+reading a hash map needs synchronization (mutex) which creates a bottle neck

@@ -1,0 +1,5 @@
+the Rwmutex replacement code takes more time than the mutex code . 
+Since we perform only write operations , but the rwmutex is made to make reads happen concurrently.
+The readoptimization part of the code for rwmutex makes it take longer.
+
+lesson is that use Rwmutex if there are more than one read operations. else there is just performance degradation.

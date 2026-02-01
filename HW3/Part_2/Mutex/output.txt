@@ -1,0 +1,2 @@
+since the program uses mutex the go routines are completely serialized and hence safe for go routines to access and it prints 50,000 exactly .
+the time taken would definitely be more due to serialization following he Amdahl's law.

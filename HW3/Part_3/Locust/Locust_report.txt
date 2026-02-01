@@ -1,0 +1,8 @@
+1.Do you see any failures?
+
+Answer: there were 0 failures
+
+2.What is the difference between GET and POST statistics?
+
+Answer:
+The POST requests avg 5.51ms were faster than GET requests avg 60.15ms

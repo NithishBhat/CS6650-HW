@@ -1,0 +1,3 @@
+ What do you observe? Document your results, do some research, and try explaining the reasons behind it!
+
+using fastHttpUser the RPS remains about the same no significant improvement , but the CPU utilization has decreased a lot from the previous instance and 5th and 99th percentile response times become more stable.

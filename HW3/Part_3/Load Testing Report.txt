@@ -1,0 +1,7 @@
+Amdahl's Law observation: 4 workers , 50 users , 10 ramps the aggregated RPS stayed around 26.75 ms if the system scaled linearly then adding 4 workers should have provided a huge RPS improvement(decrease) but it didn't. hence there must be a bottle neck preventing this speed up.
+
+
+Fast HTTP user: 4 workers , 50 users , 10 ramps, The RPS stayed almost the same more or less. but the docker_stats the CPU usage was much lower 3.5% hence its very efficient than normal HttpUser.
+
+The GET vs POST clearly show that avg POST request are faster than the Avg GET requests. this could be '
+because the GET is trying to retrieve the entire albums data while post is just adding a data field to the album. 
