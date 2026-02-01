@@ -1,0 +1,8 @@
+the Atomic program runs go routines as an atomic operation serially and hence we get a correct 50,000 count for ops.
+
+The Non atomic program runs with a race condition where the 50 go routines parallelly increments the ops values , each a 1000 times leading to an 
+unpredictable number.
+
+-race command Found 3 data races
+
+However, using atomic can still cause race condition as it doesn't guarantee order.

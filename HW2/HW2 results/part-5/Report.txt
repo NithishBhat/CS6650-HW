@@ -1,0 +1,2 @@
+1.took me 30 mins
+2.because there is no mutex or atomic operation, multiple goroutines read the same current value simultaneously, causing many increments to be overwritten and lost.

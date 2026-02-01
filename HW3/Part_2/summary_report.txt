@@ -1,0 +1,38 @@
+1. Make sure that you can summarize the tradeoffs in the different approaches above! 
+    More specifically, directly compare 3 sets of results you obtained for each tests
+    above in some quantitative representation (this can be creative!).
+    Explain the reasons behind these results.
+
+    Answer:
+
+    method          speed        reason
+    Plain Map 	    error        map doesn't allow unsafe access to go routines.
+    Mutex	        Moderate	 fully serialized and no optimizations.
+    RWMutex	   	    Slowest	     no read operations so optimization is a overhead computation.
+    sync.Map        Fastest	     optimized for this exact scenario of routines writing to 
+                                different addresses at the same time 
+
+
+
+2. In this case, we are mostly writing to the map, but what will happen if read operations dominate?
+
+    Answer:
+    if we have read operations dominate then RWMutex would be the fastest followed by sync.map and then mutex.
+
+
+3.You might have observed that one of these is definitely the fastest,
+but what are the tradeoffs between these approaches?
+
+Answer:
+    Sync.map is the fastest in this scenario by the drawback is that if the reads or write access
+    the same addresses then they will be seralized. it excels in read and write to unique addresses.
+
+    Mutex would excel in a scenario of read and write or just write at the same addresses.
+    since they would need to be seralized any optimisation would add overhead. it fails to deliver
+    in other scenarios where optimizations help.
+
+    RWMutex excels during read heavy scenarios and fails in write heavy ones.
+
+
+
+

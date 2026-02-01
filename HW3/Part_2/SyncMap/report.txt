@@ -1,0 +1,5 @@
+the program uses go routines to write to unique addresses of the map each time. Sync.map is 
+optimized for this exact scenario where writes are happening to disjoin addresses.
+
+
+
