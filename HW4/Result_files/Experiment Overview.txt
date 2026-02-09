@@ -1,0 +1,35 @@
+Experiment Overview
+I implemented a distributed MapReduce pipeline using AWS ECS (Fargate) and S3. The goal was to split a large text file, map word counts in parallel, and reduce them into a final aggregate JSON file.
+
+Results & Success
+Final Output: Successfully generated final-word-count.json in S3.
+
+Status: Aggregation completed with a 200 OK success response from the Reducer.
+
+
+Mapper Output: map-chunk1.txt.json, map-chunk2.txt.json, map-chunk3.txt.json.
+
+Reducer Response: {"final_result_s3":"s3://nithish-mapreduce-data-2026/final-word-count.json","status":"success"}.
+
+Technical Reflections
+
+The biggest pain was managing the Task Definitions and IP addresses.
+
+Image Caching: I ran into a major issue where the "Reducer" was actually running the "Mapper" code because the Task Definition was pointing to the wrong ECR URI.
+
+Task Revisions: Even after pushing new code, I had to manually stop old tasks and create new revisions (Revision 3) to force ECS to pull the updated image.
+
+IP Chasing: Every time a Fargate task restarts, the Public IP changes, requiring constant manual updates to the test URLs.
+
+Final Stats
+Text Processed: Shakespeare's Hamlet (based on high frequency of words like "the", "and", and "ham").
+
+Top Word: "the" with 993 occurrences.
+
+Word	Frequency
+the	993
+and	863
+to	685
+of	610
+ham	337
+hamlet	100
