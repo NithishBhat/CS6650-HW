@@ -1,0 +1,3 @@
+1.git clone the repository
+2.once its local, navigate to the terraform repository C:\Users\nithi\OneDrive\Documents\GitHub\CS6650-HW\HW5\Clone\CS6650_2b_demo\terraform and run "terraform apply -auto-approve"
+3.its ready to test.

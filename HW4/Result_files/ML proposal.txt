@@ -1,0 +1,4 @@
+The FLP theorem was very informative in Chapter 2. The theorem roughly states that if a distributed systems that can have delays in messages arriving at nodes , its impossible for the nodes to agree on a value if even a single node fails. or in simpler terms its impossible to tell if a node was delayed in sending a message or if it failed and thats why the message didnt arrive.
+
+I kind of experienced this in the map reduce implementation where we can create a mapper gets a really long text and the reducer waits infinietly for the result. The standard map reduce solves this via timeouts.learned this in the Hw4 implementation. 
+

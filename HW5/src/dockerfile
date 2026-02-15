@@ -1,0 +1,22 @@
+# Use the official Golang image to build the binary
+FROM golang:1.23-alpine AS builder
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the source code
+COPY . .
+
+# Build the application
+RUN go build -o server main.go
+
+# Use a tiny image for the actual run
+FROM alpine:latest
+WORKDIR /root/
+COPY --from=builder /app/server .
+
+# Expose the port your server uses
+EXPOSE 8080
+
+# Run the server
+CMD ["./server"]
