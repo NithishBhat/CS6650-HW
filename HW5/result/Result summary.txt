@@ -1,0 +1,1 @@
+in a 10 user 2 ramp locust test the Http user and fast http user are nearly the same. But when the load is increased to 50 user 2 ramp the FastHttp RPS is 15.5 which is 50 % of the Http response time. 
