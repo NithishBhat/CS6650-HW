@@ -42,6 +42,12 @@ func init() {
 	}
 }
 
+// healthHandler provides a simple 200 OK for the ALB health checks
+func healthHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
 // searchHandler implements the bounded iteration logic
 func searchHandler(w http.ResponseWriter, r *http.Request) {
 	query := strings.ToLower(r.URL.Query().Get("q"))
@@ -133,6 +139,8 @@ func productHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Health check endpoint for ALB
+	http.HandleFunc("/health", healthHandler)
 
 	// Search endpoint: /products/search?q={query}
 	http.HandleFunc("/products/search", searchHandler)
