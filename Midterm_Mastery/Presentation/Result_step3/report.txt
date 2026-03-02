@@ -1,0 +1,15 @@
+The problematic deployment faced a deadlock due to a race condition where a mutex was locked but not released. With 20 users, the system completely stalled as every request queued indefinitely behind the locked resource. As a result, the Requests Per Second dropped to zero, and response times increased to 60 seconds. To fix this, the new code used the Fail Fast and Bulkhead patterns. I replaced the blocking lock with a non-blocking TryLock and added an atomic failure counter. This change ensures that if the resource is busy or the system is under stress, requests are rejected immediately instead of queuing up. At first, running the fixed code without ending the previous task led to continued failures because the system remained blocked by the "stuck" lock from the broken run. After a clean restart, the improved system stayed responsive and processed requests without hanging.
+
+Broken System Metrics:
+Users: 20
+Avg Response Time: 60,100.51ms
+Max Response Time: 60,123ms
+Current RPS: 0
+Failures: 100%
+
+Improved System Metrics:
+Users: 20
+Avg Response Time: 83.74ms
+Max Response Time: 176ms
+Current RPS: 52.5
+Failures: 0.2%
