@@ -20,7 +20,7 @@ type Product struct {
 
 var (
 	inventory = make(map[int]Product)
-	// RWMutex is the "Wise Choice" for read-heavy APIs
+
 	mu sync.RWMutex
 )
 
