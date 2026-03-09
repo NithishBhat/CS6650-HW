@@ -1,0 +1,40 @@
+ Hummingbird Bug Fix Summary                                                                                                                                                                                                                                                     
+                                         
+  Ticket #1 — Server Started on the Wrong Port                                                                                                                                                                                                                                    
+                                                            
+  Problem: The server read APP_PORT from the environment with no fallback. When the variable was missing, app.listen(undefined) silently asked the OS for a random ephemeral port. The server started without any error, but no client could reach it on the expected port 9000.  
+                                                            
+  Solution: Added a default fallback in server.js so the port resolves to process.env.APP_PORT || 9000. If the environment variable is missing, the server now reliably starts on port 9000.
+
+  ---
+  Ticket #2 — Width Missing from Metadata
+
+  Problem: When a user uploaded an image with ?width=800, the createMedia function correctly saved the width field to DynamoDB. However, the getMedia function never included width in its return object. Any subsequent GET /v1/media/:id call returned size, name, mimetype, and
+   status — but no width.
+
+  Solution: Added width: Number(Item.width.N) to the return object in getMedia in clients/dynamodb.js, so the width is now included in metadata responses.
+
+  ---
+  Ticket #3 — Broken Redirect URL in Location Header
+
+  Problem: When a download was attempted while the image was still processing, the server returned a 202 with a Location header for the client to poll. That header was built using req.hostname, which returns only the hostname without a protocol prefix. The resulting URL
+  looked like hummingbird-alb-xxx.elb.amazonaws.com/v1/media/abc/status — missing http://. Clients couldn't follow it as a valid URL.
+
+  Solution: Changed the Location header construction in controllers/media.js to use http://${req.get('host')}, which includes both the http:// protocol prefix and the full host with port from the incoming request's Host header.
+
+  ---
+  Ticket #4 — Download Never Redirects Even When Complete
+
+  Problem: The downloadController checked media.status !== MEDIA_STATUS.PROCESSING to decide whether to return a 202. This logic was inverted — when the status was COMPLETE, the condition COMPLETE !== PROCESSING evaluated to true, so it always returned a 202. Conversely, if
+   the status happened to be PROCESSING, it would incorrectly fall through to the 302 redirect.
+
+  Solution: Changed the condition to media.status !== MEDIA_STATUS.COMPLETE. Now the server returns a 302 redirect only when the image is fully processed, and a 202 for any other status.
+
+  ---
+  Bonus — Status Never Changes After Resize
+
+  Problem: The setMediaStatus function used SK: { S: 'metadata' } (lowercase) as its DynamoDB sort key, while createMedia and getMedia both used SK: { S: 'METADATA' } (uppercase). DynamoDB keys are case-sensitive, so setMediaStatus was targeting a completely different item.
+   Because UpdateItem with no ConditionExpression silently creates a new item when the key doesn't exist, DynamoDB created a ghost record with the lowercase key and set its status to COMPLETE — no error was thrown. Meanwhile, the original record's status remained PENDING
+  forever.
+
+  Solution: Changed the sort key in setMediaStatus from 'metadata' to 'METADATA' in clients/dynamodb.js, so all three functions now target the exact same DynamoDB item.
