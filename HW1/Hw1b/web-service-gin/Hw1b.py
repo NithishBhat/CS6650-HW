@@ -2,7 +2,6 @@ import requests
 import time
 import matplotlib.pyplot as plt
 import numpy as np
-from datetime import datetime, timedelta
 
 def load_test(url, duration_seconds=30):
     response_times = []
@@ -57,7 +56,7 @@ plt.tight_layout()
 plt.show()
 
 # Print statistics
-print(f"\nStatistics:")
+print("\nStatistics:")
 print(f"Total requests: {len(response_times)}")
 print(f"Average response time: {np.mean(response_times):.2f}ms")
 print(f"Median response time: {np.median(response_times):.2f}ms")

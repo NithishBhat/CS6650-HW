@@ -1,0 +1,46 @@
+Phase 1: Sync Bottleneck
+
+P95 Latency: 4,900 ms
+P99 Latency: 5,100 ms
+Target Response Time: 3,678 ms
+
+Phase 3: Async
+
+Average Response Time: 57 ms
+RPS: 54.97
+Speed Up: 64.5x (3,678 / 57)
+
+Phase 4: Queue Buildup
+
+Peak queue depth: ~3,240 messages
+
+Phase 5: Scaling Workers
+
+Peak queue depth: ~33 (at 100 workers)
+Time until queue zero: < 5 minutes (at 100 workers)
+Resource utilization: Not captured
+Balance (min workers): ~165 goroutines
+
+Part III — Cold Start Observation:
+
+Cold Start Latency: ~73 ms avg (72-75ms range)
+Total Invocation Time: ~3,005 ms
+Warm Start Latency: ~3,003 ms
+How long does Lambda stay warm? ~5-7 minutes of idleness before next cold start
+
+Part III — Cost Analysis:
+
+ECS cost: $17/month
+Lambda cost (10K orders): $0/month
+Break-even: ~267K orders/month
+Did everyone reach same break-even? Should be the same — it's a fixed calculation based on AWS pricing
+
+Part III — Reliability vs Simplicity:
+
+If Payment API goes down for 2 hours, which system is better? Part II (ECS + SQS) — SQS retains messages for 4 days, so all orders survive. Lambda + SNS retries only 2x then discards.
+
+Part III — Operational Burnout:
+
+Complexity: Lambda requires significantly fewer lines of Terraform/code — no SQS queue, no worker service, no Dockerfiles for the worker
+Management: No queue depth monitoring needed with Lambda — AWS handles scaling automatically
+Is zero ops overhead worth losing SQS reliability? Yes for early-stage startups. No for mission-critical systems where message loss is unacceptable.
