@@ -1,0 +1,39 @@
+Part II
+Phase 1: Sync Tests
+Normal (5 users, 30s): 40 requests, 0 failures, avg 3,046ms, P95 3,100ms, 1.35 RPS. System handled normal load fine.
+Flash Sale (20 users, 60s): 285 requests, 0 failures, avg 3,678ms, P95 4,900ms, P99 5,100ms, 4.90 RPS. No failures but latency spiked 70%. Throughput capped at ~5 RPS.
+Phase 2: Bottleneck Math
+
+Max throughput: 15 slots ÷ 3s = 5 orders/sec
+Flash sale demand: ~55 orders/sec
+Orders lost per second: ~50
+
+Phase 3: Async Test
+Flash Sale (20 users, 60s): 3,289 requests, 0 failures, avg 57ms, P95 88ms, 54.97 RPS.
+Speedup: 3,678ms / 57ms = 64.5x faster. Accepted 11.5x more orders than sync.
+Phase 4: Queue Buildup (1 worker)
+Peak queue depth: ~3,240 messages. Processing at 0.33/sec, backlog would take ~2.7 hours to clear.
+Phase 5: Worker Scaling
+WorkersPeak QueueDrain1~3,240Hours5~2,880Very slow20~2,880Moderate100~33Near-instant
+Minimum workers to match ~55/sec incoming: ~165 goroutines (55 × 3s).
+
+Part III: Lambda
+Cold Starts
+
+Cold start init: ~73ms avg (72-75ms range)
+Overhead on 3s processing: 2.4% — negligible
+Warm starts: ~3001-3004ms, no overhead
+4 concurrent Lambda instances spun up automatically
+
+Cost
+
+ECS: $17/month (always running)
+Lambda: $0/month (free up to 267K orders/month)
+
+Trade-offs
+
+Lambda: zero ops overhead, auto-scaling, but loses messages after 2 SNS retries
+ECS + SQS: more ops burden, but SQS retains messages for 4 days
+
+Recommendation
+Lambda is the right choice for a startup under 267K orders/month. The cost and operational savings outweigh the retry limitations, which can be mitigated with a dead-letter queue.

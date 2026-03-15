@@ -1,0 +1,33 @@
+Phase 2: Analyze the Bottleneck
+
+Payment processor speed: 1 order per 3 seconds
+With 20 concurrent customers: Maximum throughput = 5 orders/second (15 slots ÷ 3s)
+Flash sale demand: 20 orders/second
+Orders lost per second: ~15
+
+Phase 4: Queue Problem
+
+Order acceptance rate: ~55/second
+Single worker processing rate: 0.33/second
+Queue growth rate: ~54.67 messages/second
+Time to clear backlog after 60s test: ~3,240 ÷ 0.33 = ~9,818 seconds (~163 minutes)
+
+Phase 5: Worker Scaling
+
+5 goroutines processing rate: 1.67 orders/second
+20 goroutines processing rate: 6.67 orders/second
+100 goroutines processing rate: 33.3 orders/second
+Minimum workers to prevent buildup at 55/sec: 165 goroutines (55 × 3)
+
+Analysis Questions:
+
+How many more orders did async accept? 11.5x more (3,289 vs 285)
+What causes queue buildup? Incoming rate exceeds processing rate. Prevent it by scaling workers to match incoming throughput.
+Sync vs async in production? Sync when the client needs an immediate result (auth, balance checks). Async when the operation is slow and the client doesn't need the result right away (orders, emails, reports).
+
+Part III Questions:
+
+How often did cold starts occur? First request per Lambda instance only, then stays warm for ~5-7 minutes
+Is the cost advantage compelling? Yes — $0 vs $17/month for under 267K orders
+Can you accept losing SQS guarantees? Depends — SNS retries only 2x. If payment API is down for hours, orders are lost. SQS retains for 4 days.
+Should your startup switch to Lambda? Yes for early stage. Zero ops overhead and free tier outweigh the retry limitations. Add a dead-letter queue to mitigate message loss.
