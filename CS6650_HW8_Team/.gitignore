@@ -1,0 +1,23 @@
+.DS_Store
+server-linux
+server
+*.exe
+*.test
+
+venv/
+__pycache__/
+*.pyc
+
+.vscode/
+.idea/
+
+*.pem
+.env
+.zip
+
+# Terraform 
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
