@@ -1,0 +1,113 @@
+{
+  "metadata": {
+    "description": "Combined performance test results for MySQL and DynamoDB shopping cart APIs",
+    "mysql_source": "mysql_test_results.json",
+    "dynamodb_source": "dynamodb_test_results.json",
+    "mysql_region": "us-west-2 (Oregon)",
+    "dynamodb_regions_tested": ["us-west-2 (Oregon)", "us-east-1 (Virginia)"],
+    "test_protocol": "150 sequential operations: 50 create_cart, 50 add_items, 50 get_cart",
+    "verified": {
+      "mysql_operations": 150,
+      "dynamodb_operations": 150
+    }
+  },
+  "summary": {
+    "mysql": {
+      "region": "us-west-2",
+      "overall_avg_ms": 73.39,
+      "p50_ms": 67.85,
+      "p95_ms": 95.21,
+      "p99_ms": 306.48,
+      "success_rate": 100.0,
+      "total_time_s": 11.01,
+      "by_operation": {
+        "create_cart": { "avg_ms": 75.57, "min_ms": 61.15, "max_ms": 338.51, "count": 50, "success": 50 },
+        "add_items": { "avg_ms": 76.85, "min_ms": 62.89, "max_ms": 306.48, "count": 50, "success": 50 },
+        "get_cart": { "avg_ms": 67.74, "min_ms": 62.45, "max_ms": 89.81, "count": 50, "success": 50 }
+      }
+    },
+    "dynamodb_oregon": {
+      "region": "us-west-2",
+      "runs": {
+        "test_1": {
+          "overall_avg_ms": 224.47,
+          "p50_ms": 222.92,
+          "p95_ms": 233.40,
+          "p99_ms": 237.18,
+          "success_rate": 100.0,
+          "total_time_s": 33.67,
+          "by_operation": {
+            "create_cart": { "avg_ms": 222.46, "min_ms": 217.44, "max_ms": 305.99, "count": 50, "success": 50 },
+            "add_items": { "avg_ms": 229.55, "min_ms": 222.43, "max_ms": 246.59, "count": 50, "success": 50 },
+            "get_cart": { "avg_ms": 219.40, "min_ms": 214.09, "max_ms": 224.96, "count": 50, "success": 50 }
+          }
+        },
+        "test_2": {
+          "overall_avg_ms": 223.09,
+          "p50_ms": 220.81,
+          "p95_ms": 244.90,
+          "p99_ms": 255.21,
+          "success_rate": 100.0,
+          "total_time_s": 33.46,
+          "by_operation": {
+            "create_cart": { "avg_ms": 221.07, "min_ms": 213.40, "max_ms": 284.40, "count": 50, "success": 50 },
+            "add_items": { "avg_ms": 231.25, "min_ms": 223.73, "max_ms": 255.21, "count": 50, "success": 50 },
+            "get_cart": { "avg_ms": 219.65, "min_ms": 214.48, "max_ms": 226.88, "count": 50, "success": 50 }
+          }
+        },
+        "test_3": {
+          "overall_avg_ms": 222.07,
+          "p50_ms": 220.76,
+          "p95_ms": 234.76,
+          "p99_ms": 247.11,
+          "success_rate": 100.0,
+          "total_time_s": 33.31,
+          "by_operation": {
+            "create_cart": { "avg_ms": 218.78, "min_ms": 203.67, "max_ms": 247.11, "count": 50, "success": 50 },
+            "add_items": { "avg_ms": 229.10, "min_ms": 222.67, "max_ms": 237.98, "count": 50, "success": 50 },
+            "get_cart": { "avg_ms": 220.05, "min_ms": 214.02, "max_ms": 230.98, "count": 50, "success": 50 }
+          }
+        }
+      }
+    },
+    "dynamodb_virginia": {
+      "region": "us-east-1",
+      "runs": {
+        "test_1": {
+          "overall_avg_ms": 103.46,
+          "p50_ms": 100.77,
+          "p95_ms": 115.88,
+          "p99_ms": 139.72,
+          "success_rate": 100.0,
+          "total_time_s": 15.52,
+          "by_operation": {
+            "create_cart": { "avg_ms": 102.48, "min_ms": 95.47, "max_ms": 139.72, "count": 50, "success": 50 },
+            "add_items": { "avg_ms": 112.15, "min_ms": 105.24, "max_ms": 123.19, "count": 50, "success": 50 },
+            "get_cart": { "avg_ms": 99.68, "min_ms": 94.47, "max_ms": 104.09, "count": 50, "success": 50 }
+          }
+        }
+      }
+    }
+  },
+  "comparison": {
+    "note": "Winner/Margin uses MySQL (Oregon) vs DynamoDB best result (Virginia T1)",
+    "performance_table": {
+      "avg_response_time": { "mysql": 73.39, "dynamodb_best": 103.46, "winner": "MySQL", "margin_ms": 30.07 },
+      "p50_response_time": { "mysql": 67.85, "dynamodb_best": 100.77, "winner": "MySQL", "margin_ms": 32.92 },
+      "p95_response_time": { "mysql": 95.21, "dynamodb_best": 115.88, "winner": "MySQL", "margin_ms": 20.67 },
+      "p99_response_time": { "mysql": 306.48, "dynamodb_best": 139.72, "winner": "DynamoDB", "margin_ms": 166.76 },
+      "success_rate": { "mysql": 100.0, "dynamodb_best": 100.0, "winner": "Tie", "margin_pct": 0.0 }
+    },
+    "operation_breakdown": {
+      "create_cart": { "mysql": 75.57, "dynamodb_best": 102.48, "winner": "MySQL", "margin_ms": 26.91 },
+      "add_items": { "mysql": 76.85, "dynamodb_best": 112.15, "winner": "MySQL", "margin_ms": 35.30 },
+      "get_cart": { "mysql": 67.74, "dynamodb_best": 99.68, "winner": "MySQL", "margin_ms": 31.94 }
+    },
+    "network_latency_impact": {
+      "dynamodb_oregon_avg": 222.07,
+      "dynamodb_virginia_avg": 103.46,
+      "reduction_pct": 53.4,
+      "explanation": "Moving from Oregon to Virginia (closer to test client in Boston) cut DynamoDB latency by 53.4%, confirming network distance as the primary latency factor"
+    }
+  }
+}
