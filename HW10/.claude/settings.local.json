@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.\\(py|go|yaml|yml\\)$\")",
+      "Bash(go mod:*)",
+      "Bash(go get:*)",
+      "Bash(go build:*)",
+      "Bash(docker compose:*)",
+      "Bash(go version:*)",
+      "Bash(curl -s http://localhost:8080/health)",
+      "Bash(curl -s -X POST http://localhost:8080/set -H \"Content-Type: application/json\" -d '{\"key\":\"hello\",\"value\":\"world\"}')",
+      "Bash(curl -s http://localhost:8080/get/hello)",
+      "Bash(curl -s http://localhost:8081/get/hello)",
+      "Bash(curl -s http://localhost:8084/local_read/hello)",
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(WRITE_RATIO=10 READ_RATIO=90 MODE=leader python -m locust -f locustfile.py --host http://localhost:8080 --headless -u 10 -r 5 -t 15s)",
+      "Bash(bash:*)",
+      "Bash(ls results/*_stale.txt)",
+      "Bash(ls results/*_stats.csv)",
+      "Bash(WRITE_RATIO=10 READ_RATIO=90 MODE=leader STALE_FILE=test_stale.txt INTERVALS_FILE=test_intervals.csv python -m locust -f locustfile.py --host http://localhost:8080 --headless -u 5 -r 5 -t 10s)",
+      "Bash(ls:*)"
+    ]
+  }
+}
