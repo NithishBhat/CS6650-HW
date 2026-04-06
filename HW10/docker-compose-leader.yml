@@ -1,0 +1,60 @@
+services:
+  node0:
+    build: .
+    environment:
+      ROLE: leader
+      NODE_ID: "0"
+      PEERS: "node0:8080,node1:8080,node2:8080,node3:8080,node4:8080"
+      LEADER_ADDR: "node0:8080"
+      W: "${W:-5}"
+      R: "${R:-1}"
+    ports:
+      - "8080:8080"
+
+  node1:
+    build: .
+    environment:
+      ROLE: follower
+      NODE_ID: "1"
+      PEERS: "node0:8080,node1:8080,node2:8080,node3:8080,node4:8080"
+      LEADER_ADDR: "node0:8080"
+      W: "${W:-5}"
+      R: "${R:-1}"
+    ports:
+      - "8081:8080"
+
+  node2:
+    build: .
+    environment:
+      ROLE: follower
+      NODE_ID: "2"
+      PEERS: "node0:8080,node1:8080,node2:8080,node3:8080,node4:8080"
+      LEADER_ADDR: "node0:8080"
+      W: "${W:-5}"
+      R: "${R:-1}"
+    ports:
+      - "8082:8080"
+
+  node3:
+    build: .
+    environment:
+      ROLE: follower
+      NODE_ID: "3"
+      PEERS: "node0:8080,node1:8080,node2:8080,node3:8080,node4:8080"
+      LEADER_ADDR: "node0:8080"
+      W: "${W:-5}"
+      R: "${R:-1}"
+    ports:
+      - "8083:8080"
+
+  node4:
+    build: .
+    environment:
+      ROLE: follower
+      NODE_ID: "4"
+      PEERS: "node0:8080,node1:8080,node2:8080,node3:8080,node4:8080"
+      LEADER_ADDR: "node0:8080"
+      W: "${W:-5}"
+      R: "${R:-1}"
+    ports:
+      - "8084:8080"
