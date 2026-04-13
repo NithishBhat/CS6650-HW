@@ -1,0 +1,183 @@
+1. Roughly how many submissions did it take before you passed all
+critical scenarios, and what was the most common failure?
+
+ took me 2 to 3 tries
+
+
+2. Where are your photo files stored, and why did you pick that
+over other options?
+
+Photos are stored in S3 with a public-read bucket policy so
+ChaosArena can fetch the URL directly. S3 was the obvious choice
+because it's durable, scalable, and serves files over HTTP without
+any extra infrastructure. EBS or local disk would tie files to a
+single instance and wouldn't survive task restarts.
+
+
+3. Describe your deployment setup - how many instances, what cloud
+services, and how they connect to each other.
+
+Two Fargate tasks (2 vCPU / 4GB each) behind an Application Load
+Balancer. DynamoDB for metadata (albums and photos tables). S3 for
+photo storage. VPC Gateway Endpoints for S3 and DynamoDB so traffic
+stays on the AWS backbone. The ALB distributes incoming requests
+across both tasks, and each task talks to DynamoDB and S3 directly
+via VPC endpoints.
+
+
+4. Did you use a reverse proxy or load balancer? If so, what role
+does it play in your architecture?
+
+Yes, an ALB. It distributes HTTP requests across the two Fargate
+tasks, performs health checks every 10 seconds on /health, and
+automatically stops routing to unhealthy tasks. It also handles
+connection pooling from ChaosArena to our backend.
+
+
+5. How does your background worker get notified that there's a new
+photo to process? Did you use a queue, polling, or something else?
+
+There is no separate background worker or queue. The photo upload
+handler streams the file directly from the HTTP request to S3 using
+the S3 Upload Manager, then spawns a lightweight goroutine that
+makes a single DynamoDB UpdateItem call to set the status to
+"completed". The S3 upload happens synchronously in the handler
+before returning 202.
+
+
+6. The spec requires that seq is assigned in the POST handler, not
+the background worker. Why does that matter, and how did you ensure
+correctness under concurrent uploads to the same album?
+
+It matters because seq must be monotonically increasing and unique
+within each album. If assigned in a background worker, race
+conditions could produce duplicate or out-of-order numbers. I used
+DynamoDB's UpdateItem with
+"SET photo_seq = if_not_exists(photo_seq, :zero) + :one"
+and ReturnValues=UPDATED_NEW, which atomically increments and
+returns the new value in a single operation, guaranteeing
+correctness even under concurrent uploads.
+
+
+7. What happens in your system if the worker crashes or fails
+halfway through processing a photo?
+
+If the S3 upload fails, the background goroutine sets the photo
+status to "failed" in DynamoDB using a conditional update
+(attribute_exists(photo_id)) so it doesn't resurrect a deleted
+record. If the entire task crashes mid-upload, the photo stays in
+"processing" forever and ChaosArena will eventually time out
+polling it. The S3 Upload Manager handles partial multipart
+uploads by aborting them automatically.
+
+
+8. What does your database schema look like? What tables or
+collections did you create and why?
+
+Two DynamoDB tables:
+- "albums" with partition key album_id, storing title, description,
+  owner, and photo_seq counter.
+- "photos" with partition key photo_id, storing album_id, seq,
+  status, url, and s3_key.
+Two tables because albums and photos have different access patterns.
+Albums are looked up by album_id, photos by photo_id, and they
+have independent lifecycles.
+
+
+9. Did you add any indexes to your database? If so, on which
+columns and why?
+
+No secondary indexes. DynamoDB's partition key lookup is O(1) by
+default, and every query in the spec uses the primary key directly
+(get album by album_id, get photo by photo_id). The only scan is
+GET /albums which returns all albums. A GSI wouldn't help there,
+and DynamoDB scan with PAY_PER_REQUEST billing handles it fine.
+
+
+10. Which load testing scenario was the hardest for you, and what
+bottleneck did you discover?
+
+S15 (Large Payload Upload) was the hardest. The original
+implementation used io.ReadAll to buffer entire files in memory
+before uploading to S3, which caused OOM kills on concurrent
+large uploads. Even after switching to sync.Pool buffers, the
+channel holding 1000 queued items still exhausted memory. The
+fix was true streaming using r.MultipartReader() to pipe bytes
+directly from the TCP connection to S3 via the Upload Manager,
+with zero memory buffering.
+
+
+11. What was the single most impactful change you made to improve
+your load test scores?
+
+Replacing r.FormFile() (which calls ParseMultipartForm and buffers
+the entire file) with r.MultipartReader() that streams directly to
+the S3 Upload Manager. This eliminated all memory buffering, fixed
+the OOM crashes on S15, and took S15 from 0/20 to 20/20. Combined
+with adding a second Fargate task behind the ALB, the score jumped
+from 157 to 188.
+
+
+12. How did you handle concurrent writes - for example, many album
+creates or photo uploads happening at the same time?
+
+DynamoDB handles concurrency natively. Each PutItem/UpdateItem is
+atomic. For album creates, UpdateItem is idempotent by design. For
+photo seq numbers, the atomic increment expression guarantees no
+duplicates. For deletes, DeleteItem with ReturnValues=ALL_OLD
+atomically removes the record and returns the old data, preventing
+double-delete race conditions. Go's HTTP server spawns a goroutine
+per request, so concurrent handling is built in.
+
+
+13. Describe a specific bug you ran into and how you diagnosed it
+using the ChaosArena event logs or your own logs.
+
+S15 was returning 100% errors even after implementing streaming.
+The ChaosArena event log showed the run lasted only 3.6 seconds
+with complete_error_rate_pct=100. I checked CloudWatch logs and
+found no S15 POST requests in the log stream, but discovered a
+newer log stream existed, meaning the Fargate task had been
+OOM-killed and restarted. This led me to discover that r.FormFile()
+was still buffering files via ParseMultipartForm internally, which
+I then replaced with r.MultipartReader().
+
+
+14. How did you test your service locally before submitting to
+ChaosArena?
+
+I wrote a Python verification script (tests/verify.py) that
+sequentially tests all endpoints: health check, album CRUD with
+idempotency, async photo upload with polling, photo delete with
+URL verification, album listing, and per-album sequence numbers.
+I also wrote a Locust load test (tests/locustfile.py) for
+concurrent testing. Both were run against the deployed service
+before every ChaosArena submission.
+
+
+15. If you had another week, what is the one thing you would change
+or add to your system to improve your score?
+
+I would add a custom HTTP transport for the AWS SDK with tuned
+connection pooling (MaxIdleConns=300, MaxIdleConnsPerHost=100) to
+reuse TLS connections to DynamoDB and S3. Every AWS API call
+currently pays a TLS handshake cost (~30-50ms), and under load
+with thousands of calls per second, connection reuse would shave
+seconds off the aggregate latency, particularly improving S12
+concurrent photo completion times.
+
+
+16. How did you add value over and above what Claude could do in
+this assignment?
+
+I directed every architectural decision: choosing Fargate over EC2
+after analyzing the tradeoffs, identifying the OOM root cause from
+CloudWatch logs, pushing for true streaming over buffering
+approaches, and deciding when to add or remove tasks based on CPU
+utilization metrics I checked in the AWS console. Claude wrote the
+code and ran the commands, but I diagnosed each failure, decided
+what to try next, and understood why each change mattered. The
+iterative debugging process (reading ChaosArena event logs,
+correlating with server logs, forming hypotheses about why S15
+failed) was driven by my understanding of distributed systems
+concepts from the course.
