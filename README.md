@@ -1,36 +1,33 @@
-# CS 6650 – Scalable Distributed Systems (Northeastern University)
+# CS 6650 – Scalable Distributed Systems
 
-Coursework for CS 6650 Scalable Distributed Systems. Each folder is a self-contained assignment: Go services deployed to AWS with Terraform and Docker, load tested with Locust, and written up with measured results.
+This is my coursework from CS 6650, a graduate course on distributed systems at Northeastern University. Over the semester I built small backend services, put them on AWS, and then hammered them with simulated traffic to see how they behaved: where they slowed down, where they broke, and what it cost to fix that. Each folder is one assignment, usually with a short write-up of the measured results.
 
-> **Highlight:** `Final_mastery/` is an Album Store service that scored **190/190** on the ChaosArena load-test leaderboard. It is also published as its own repo: [NithishBhat/album-store](https://github.com/NithishBhat/album-store).
+The piece I'd point to first is the Album Store, a photo-album web service that passed every test of the course's automated load-testing grader. It lives here in `Final_mastery/` and also as its own repo: [NithishBhat/album-store](https://github.com/NithishBhat/album-store).
 
-## Tech Stack
-
-- **Languages:** Go (net/http, Gin, gorilla/mux), Python
-- **AWS:** EC2, ECS Fargate, ECR, ALB, S3, DynamoDB, RDS MySQL, SNS, SQS, Lambda, CloudWatch, VPC
-- **Infrastructure / tooling:** Terraform, Docker, Docker Compose, Locust
+Most of the code is Go, with Python for load tests and analysis. Infrastructure is Terraform and Docker on AWS (EC2, ECS Fargate, ALB, S3, DynamoDB, RDS MySQL, SNS/SQS, Lambda), and load testing is done with Locust.
 
 ## Assignments
 
-| Folder | What it covers |
-|--------|----------------|
-| [`HW1`](HW1) | Gin REST API for albums, containerized with Docker and deployed to EC2; Python script that load tests the endpoint and plots the response-time distribution. |
-| [`HW2`](HW2) | Terraform for EC2 instances and security groups; script showing that in-memory state diverges across two independently deployed instances; deploying a Go Lambda and analyzing a race condition. |
-| [`HW3`](HW3) | Go concurrency experiments (atomic vs. non-atomic counters, Mutex, RWMutex, `sync.Map`, buffered vs. unbuffered file I/O, context switching) plus Locust load tests in Docker Compose (Amdahl's law, `HttpUser` vs. `FastHttpUser`, GET vs. POST). |
-| [`HW4`](HW4) | MapReduce word count as three Go microservices (splitter, mapper, reducer) on ECS Fargate with S3 for intermediate and final results, run on *Hamlet*. |
-| [`HW5`](HW5) | Product API in Go with an `RWMutex`-protected in-memory store, deployed to AWS using Terraform from the course demo repo (submodule) and load tested with Locust (`HttpUser` vs. `FastHttpUser`). |
-| [`HW6`](HW6) | Product search service over 100,000 generated products in a `sync.Map` with bounded search, ALB health checks, and a Locust search-heavy workload. |
-| [`HW7`](HW7) | Order processing comparing synchronous vs. asynchronous handling: API publishes to SNS, SQS-backed ECS worker pool vs. SNS-triggered Lambda, with queue-depth, worker-scaling, cold-start and cost analysis. All infrastructure in Terraform. |
-| [`CS6650_HW8_Team`](CS6650_HW8_Team) | Team project: shopping-cart service implemented on both RDS MySQL (normalized schema, documented index design) and DynamoDB, with modular Terraform (network, ALB, ECS, ECR, RDS, logging), SNS/SQS/Lambda, and Python tests for performance and consistency. |
-| [`HW9`](HW9) | Submodule pointer only; no files in this repo. |
-| [`HW10`](HW10) | Replicated in-memory key-value store in Go, run as Leader-Follower and Leaderless clusters (Docker Compose) with configurable W/R quorums; Locust tests across write ratios measuring latency and stale reads, with generated graphs and a report. |
-| [`Midterm_Mastery`](Midterm_Mastery) | Diagnosing a deadlock caused by a lock that was never released, then fixing it with fail-fast `TryLock` and bulkhead patterns; before/after load-test metrics. |
-| [`Midterm_mystery`](Midterm_mystery) | Debugging an existing media service ("Hummingbird"): summary of four bug fixes (port fallback, missing metadata field, redirect URL, download redirect logic). |
-| [`Final_mastery`](Final_mastery) | **Album Store** – Go REST service for albums and photo uploads backed by DynamoDB and S3, running on ECS Fargate behind an ALB, provisioned with Terraform and a deploy script. Includes Locust and verification tests and logs from six benchmark runs (EC2 instance sizes, Fargate, streaming and multipart uploads). Scored 190/190 on ChaosArena; see [album-store](https://github.com/NithishBhat/album-store). |
+| Folder | What it is |
+|--------|------------|
+| [`HW1`](HW1) | A small Go album API in Docker on EC2, plus a Python script that load tests it and plots response times. |
+| [`HW2`](HW2) | EC2 setup with Terraform; a demo of two copies of a service drifting apart when each keeps its own in-memory state; a Go Lambda and a race condition. |
+| [`HW3`](HW3) | Go concurrency experiments (atomics, mutexes, `sync.Map`, buffered vs. unbuffered file writes, context switching) and Locust tests looking at Amdahl's law and GET vs. POST. |
+| [`HW4`](HW4) | MapReduce word count split into three Go services (splitter, mapper, reducer) on ECS Fargate, using S3 between stages. Run on *Hamlet*. |
+| [`HW5`](HW5) | Product API in Go with a thread-safe in-memory store, deployed with Terraform and load tested with Locust. |
+| [`HW6`](HW6) | Product search over 100,000 generated products behind a load balancer, tested with a search-heavy workload. |
+| [`HW7`](HW7) | Order processing done synchronously vs. through queues (SNS/SQS with an ECS worker pool, and with Lambda). Compares queue depth, worker scaling, cold starts and cost. |
+| [`CS6650_HW8_Team`](CS6650_HW8_Team) | Team project: the same shopping-cart service built on MySQL (RDS) and on DynamoDB, with Terraform modules and Python tests for performance and consistency. |
+| [`HW9`](HW9) | Submodule pointer only; no files here. |
+| [`HW10`](HW10) | Replicated key-value store in Go, run as leader-follower and leaderless clusters with tunable read/write quorums. Measures latency and stale reads at different write ratios. |
+| [`Midterm_Mastery`](Midterm_Mastery) | Tracking down a deadlock from a lock that was never released, fixing it with `TryLock` and bulkheads, with before/after load-test numbers. |
+| [`Midterm_mystery`](Midterm_mystery) | Debugging an existing media service: notes on four bugs found and fixed. |
+| [`Final_mastery`](Final_mastery) | The Album Store: Go service for albums and photo uploads on DynamoDB and S3, running on ECS Fargate behind a load balancer. Includes the Terraform, a deploy script, tests, and logs from six benchmark runs. Also at [album-store](https://github.com/NithishBhat/album-store). |
+| [`Final_Project`](Final_Project) | Submodule pointer only; no files here. |
 
-## Running an Assignment
+## Running things
 
-Each folder runs on its own. Common patterns:
+Each folder stands on its own. The usual pattern:
 
 ```bash
 # Go service locally
@@ -46,4 +43,4 @@ terraform apply
 locust -f locustfile.py --host http://<service-host>
 ```
 
-`HW10` runs locally with Docker Compose (`docker compose -f docker-compose-leader.yml up` or `docker-compose-leaderless.yml`). `Final_mastery/deploy.sh` and `HW7/code/deploy-script.sh` handle build, push to ECR, and Terraform apply for those projects.
+`HW10` runs locally with Docker Compose (`docker compose -f docker-compose-leader.yml up`, or `docker-compose-leaderless.yml`). `Final_mastery/deploy.sh` and `HW7/code/deploy-script.sh` build the image, push it to ECR and run Terraform.
